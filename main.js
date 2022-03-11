@@ -1,40 +1,82 @@
-//Gameboard Module
-let Gameboard = (() => {
-	let board = ["X", "O", "X", "O", "O", "X", "O", "O", "X"];
+//DOM
+const $playerx = document.querySelector("#X");
+const $playero = document.querySelector("#O");
+const $boxes = document.querySelectorAll(".square");
+const $box1 = document.querySelector("#position-1");
+const $box2 = document.querySelector("#position-2");
+const $box3 = document.querySelector("#position-3");
+const $box4 = document.querySelector("#position-4");
+const $box5 = document.querySelector("#position-5");
+const $box6 = document.querySelector("#position-6");
+const $box7 = document.querySelector("#position-7");
+const $box8 = document.querySelector("#position-8");
+const $box9 = document.querySelector("#position-9");
+const $resetButton = document.querySelector(".reset");
+let player = "";
+//Event Listeners
 
-	return { board };
+$resetButton.addEventListener("click", () => {
+	Gameboard.reset();
+	DisplayController.displaySelection(Gameboard.board);
+});
+
+$playerx.addEventListener("click", () => {
+	player = CreatePlayer("X");
+});
+$playero.addEventListener("click", () => {
+	player = CreatePlayer("O");
+});
+
+$boxes.forEach((box) => {
+	box.addEventListener("click", (e) => {
+		player.play(Gameboard.board, e);
+	});
+});
+
+//Gameboard Module
+
+let Gameboard = (() => {
+	let board = [];
+
+	const reset = () => {
+		Gameboard.board = [];
+	};
+
+	return { board, reset };
 })();
 
 let DisplayController = (() => {
-	function displaySelection() {
-		let $box1 = document.querySelector("#position-1");
-		let $box2 = document.querySelector("#position-2");
-		let $box3 = document.querySelector("#position-3");
-		let $box4 = document.querySelector("#position-4");
-		let $box5 = document.querySelector("#position-5");
-		let $box6 = document.querySelector("#position-6");
-		let $box7 = document.querySelector("#position-7");
-		let $box8 = document.querySelector("#position-8");
-		let $box9 = document.querySelector("#position-9");
-
-		$box1.textContent = Gameboard.board[0];
-		$box2.textContent = Gameboard.board[1];
-		$box3.textContent = Gameboard.board[2];
-		$box4.textContent = Gameboard.board[3];
-		$box5.textContent = Gameboard.board[4];
-		$box6.textContent = Gameboard.board[5];
-		$box7.textContent = Gameboard.board[6];
-		$box8.textContent = Gameboard.board[7];
-		$box9.textContent = Gameboard.board[8];
+	function displaySelection(board) {
+		//Array Values to Containers
+		$box1.textContent = board[0];
+		$box2.textContent = board[1];
+		$box3.textContent = board[2];
+		$box4.textContent = board[3];
+		$box5.textContent = board[4];
+		$box6.textContent = board[5];
+		$box7.textContent = board[6];
+		$box8.textContent = board[7];
+		$box9.textContent = board[8];
 	}
 
 	return {
-		displaySelection: displaySelection,
+		displaySelection,
 	};
 })();
 
-DisplayController.displaySelection();
+DisplayController.displaySelection(Gameboard.board);
 
 //Players
 
-function CreatePlayer() {}
+function CreatePlayer(style) {
+	let play = (board, e) => {
+		if (e.target.textContent === "") {
+			e.target.textContent = style;
+			board.push(style);
+		} else {
+			return;
+		}
+	};
+
+	return { play };
+}
