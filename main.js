@@ -21,10 +21,10 @@ $resetButton.addEventListener("click", () => {
 });
 
 $playerx.addEventListener("click", () => {
-	player = CreatePlayer("X");
+	player = CreatePlayer("X", "rgb(58,58,58)");
 });
 $playero.addEventListener("click", () => {
-	player = CreatePlayer("O");
+	player = CreatePlayer("O", "white");
 });
 
 $boxes.forEach((box) => {
@@ -68,10 +68,11 @@ DisplayController.displaySelection(Gameboard.board);
 
 //Players
 
-function CreatePlayer(style) {
+function CreatePlayer(style, color) {
 	let play = (board, e) => {
 		if (e.target.textContent === "") {
 			e.target.textContent = style;
+			e.target.style.color = color;
 			board.push(style);
 		} else {
 			return;
