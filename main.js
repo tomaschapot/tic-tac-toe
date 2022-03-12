@@ -2,47 +2,106 @@
 const $playerx = document.querySelector("#X");
 const $playero = document.querySelector("#O");
 const $boxes = document.querySelectorAll(".square");
-const $box1 = document.querySelector("#position-1");
-const $box2 = document.querySelector("#position-2");
-const $box3 = document.querySelector("#position-3");
-const $box4 = document.querySelector("#position-4");
-const $box5 = document.querySelector("#position-5");
-const $box6 = document.querySelector("#position-6");
-const $box7 = document.querySelector("#position-7");
-const $box8 = document.querySelector("#position-8");
-const $box9 = document.querySelector("#position-9");
+const $box1 = document.querySelector("#pos-0");
+const $box2 = document.querySelector("#pos-1");
+const $box3 = document.querySelector("#pos-2");
+const $box4 = document.querySelector("#pos-3");
+const $box5 = document.querySelector("#pos-4");
+const $box6 = document.querySelector("#pos-5");
+const $box7 = document.querySelector("#pos-6");
+const $box8 = document.querySelector("#pos-7");
+const $box9 = document.querySelector("#pos-8");
 const $resetButton = document.querySelector(".reset");
-let player = "";
+const $gameMode = document.querySelector("#game-mode");
+
+let player1 = "";
+let player2 = "";
+let count = 1;
+
 //Event Listeners
 
 $resetButton.addEventListener("click", () => {
-	Gameboard.reset();
-	DisplayController.displaySelection(Gameboard.board);
+	Game.reset();
+	DisplayController.displaySelection(Game.board);
 });
 
 $playerx.addEventListener("click", () => {
-	player = CreatePlayer("X", "rgb(58,58,58)");
+	player1 = CreatePlayer("player1", "X", "rgb(58,58,58)");
+	player2 = CreatePlayer("player2", "O", "white");
+	DisplayController.turnOnButton($playerx, $playero);
 });
 $playero.addEventListener("click", () => {
-	player = CreatePlayer("O", "white");
+	player1 = CreatePlayer("player1", "O", "white");
+	player2 = CreatePlayer("player2", "X", "rgb(58,58,58)");
+	DisplayController.turnOnButton($playero, $playerx);
 });
 
 $boxes.forEach((box) => {
 	box.addEventListener("click", (e) => {
-		player.play(Gameboard.board, e);
+		gameTurns(e);
 	});
 });
 
 //Gameboard Module
 
-let Gameboard = (() => {
-	let board = [];
+let Game = (() => {
+	let board = ["", "", "", "", "", "", "", "", ""];
 
 	const reset = () => {
-		Gameboard.board = [];
+		Game.board = ["", "", "", "", "", "", "", "", ""];
+		count = 1;
 	};
 
-	return { board, reset };
+	function computerRandomizer() {
+		let randomBoxNumber = Math.floor(Math.random() * $boxes.length);
+		let boxSelection = $boxes[randomBoxNumber];
+		let boxId = boxSelection.id.slice(4);
+
+		function selection() {
+			if (
+				boxSelection.textContent !== "X" &&
+				boxSelection.textContent !== "O"
+			) {
+				let token = (boxSelection.textContent =
+					player1.token === "X" ? "O" : "X");
+				board[boxId] = token;
+				boxSelection.style.color = "white";
+				count = count + 1;
+			} else if (count < 9) {
+				randomBoxNumber = Math.floor(Math.random() * $boxes.length);
+				boxSelection = $boxes[randomBoxNumber];
+				boxId = boxSelection.id.slice(4);
+				selection();
+			}
+		}
+		selection();
+	}
+
+	function turns(board, player1, player2) {}
+
+	function play(player, board) {
+		if (
+			(board[0] === player.token &&
+				board[1] === player.token &&
+				board[3] === player.token) ||
+			(board[3] === player.token &&
+				board[4] === player.token &&
+				board[5] === player.token) ||
+			(board[6] === player.token &&
+				board[7] === player.token &&
+				board[8] === player.token) ||
+			(board[0] === player.token &&
+				board[4] === player.token &&
+				board[8] === player.token) ||
+			(board[2] === player.token &&
+				board[4] === player.token &&
+				board[6] === player.token)
+		) {
+			return console.log(`${player.name} Wins.`);
+		}
+	}
+
+	return { board, reset, play, turns, computerRandomizer };
 })();
 
 let DisplayController = (() => {
@@ -59,25 +118,64 @@ let DisplayController = (() => {
 		$box9.textContent = board[8];
 	}
 
+	function turnOnButton(selectedButton, removedButton) {
+		selectedButton.classList.add("button-selected");
+		removedButton.classList.remove("button-selected");
+	}
+
 	return {
 		displaySelection,
+		turnOnButton,
 	};
 })();
 
-DisplayController.displaySelection(Gameboard.board);
-
 //Players
 
-function CreatePlayer(style, color) {
+function CreatePlayer(name, token, color) {
 	let play = (board, e) => {
 		if (e.target.textContent === "") {
-			e.target.textContent = style;
+			e.target.textContent = token;
 			e.target.style.color = color;
-			board.push(style);
+
+			let boardPosition = e.target.id;
+
+			board[boardPosition.slice(4)] = token;
+			count = count + 1;
 		} else {
 			return;
 		}
 	};
 
-	return { play };
+	return { token, name, play };
 }
+function gameTurns(e) {
+	if ($gameMode.options[$gameMode.selectedIndex].textContent === "Friend") {
+		if (player1 === "") {
+			return;
+		} else {
+			if (count % 2 !== 0) {
+				player1.play(Game.board, e);
+			} else {
+				player2.play(Game.board, e);
+			}
+		}
+	} else if (
+		$gameMode.options[$gameMode.selectedIndex].textContent === "Computer"
+	) {
+		if (player1 === "") {
+			return;
+		} else {
+			if (count % 2 !== 0) {
+				new Promise((resolve, reject) => {
+					resolve(player1.play(Game.board, e));
+				}).then(
+					setTimeout(() => {
+						Game.computerRandomizer();
+					}, 200)
+				);
+			} else {
+			}
+		}
+	}
+}
+DisplayController.displaySelection(Game.board);

@@ -34,6 +34,7 @@
 	justify-content: center;
 	align-items: center;
 	color: rgb(58, 58, 58);
+	cursor: pointer;
 }
 .button {
 	margin: 0 auto;
@@ -45,6 +46,7 @@
 	color: white;
 	font-weight: bold;
 	transition: 0.2s;
+	cursor: pointer;
 }
 .reset {
 	margin: 0 auto;
@@ -63,6 +65,12 @@
 	box-shadow: 0px 0px 10px white;
 }
 
+.button-selected {
+	background-color: white;
+	color: black;
+	box-shadow: 0px 0px 10px white;
+}
+
 .scoreboard {
 	text-align: center;
 	margin: 10px;
@@ -76,4 +84,11 @@ select {
 	border-radius: 7px;
 	color: gray;
 	font-weight: bold;
+}
+
+@media (max-width: 720px) {
+	.board {
+		width: 270px;
+		height: 270px;
+	}
 }
