@@ -72,8 +72,10 @@
 }
 
 .scoreboard {
+	font-weight: bold;
+	font-size: 1.5rem;
 	text-align: center;
-	margin: 10px;
+	margin: 0;
 	color: white;
 	font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }

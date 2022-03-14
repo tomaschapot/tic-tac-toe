@@ -13,6 +13,7 @@ const $box8 = document.querySelector("#pos-7");
 const $box9 = document.querySelector("#pos-8");
 const $resetButton = document.querySelector(".reset");
 const $gameMode = document.querySelector("#game-mode");
+const $turn = document.querySelector(".scoreboard");
 
 let player1 = "";
 let player2 = "";
@@ -29,11 +30,13 @@ $playerx.addEventListener("click", () => {
 	player1 = CreatePlayer("player1", "X", "rgb(58,58,58)");
 	player2 = CreatePlayer("player2", "O", "white");
 	DisplayController.turnOnButton($playerx, $playero);
+	DisplayController.turn();
 });
 $playero.addEventListener("click", () => {
 	player1 = CreatePlayer("player1", "O", "white");
 	player2 = CreatePlayer("player2", "X", "rgb(58,58,58)");
 	DisplayController.turnOnButton($playero, $playerx);
+	DisplayController.turn();
 });
 
 $boxes.forEach((box) => {
@@ -65,7 +68,8 @@ let Game = (() => {
 				let token = (boxSelection.textContent =
 					player1.token === "X" ? "O" : "X");
 				board[boxId] = token;
-				boxSelection.style.color = "white";
+				boxSelection.style.color =
+					player1.token === "X" ? "white" : "rgb(58,58,58)";
 				count = count + 1;
 			} else if (count < 9) {
 				randomBoxNumber = Math.floor(Math.random() * $boxes.length);
@@ -118,6 +122,18 @@ let DisplayController = (() => {
 		$box9.textContent = board[8];
 	}
 
+	function turn() {
+		if ($gameMode.options[$gameMode.selectedIndex].textContent === "Friend") {
+			$turn.textContent = "Turn : Player 1";
+		} else if (
+			$gameMode.options[$gameMode.selectedIndex].textContent === "Computer"
+		) {
+			$turn.textContent = "Start the Game";
+		} else {
+			$turn.textContent = "Please Choose a Game Mode";
+		}
+	}
+
 	function turnOnButton(selectedButton, removedButton) {
 		selectedButton.classList.add("button-selected");
 		removedButton.classList.remove("button-selected");
@@ -126,6 +142,7 @@ let DisplayController = (() => {
 	return {
 		displaySelection,
 		turnOnButton,
+		turn,
 	};
 })();
 
@@ -155,8 +172,10 @@ function gameTurns(e) {
 		} else {
 			if (count % 2 !== 0) {
 				player1.play(Game.board, e);
+				$turn.textContent = "Turn : Player 2";
 			} else {
 				player2.play(Game.board, e);
+				$turn.textContent = "Turn : Player 1";
 			}
 		}
 	} else if (
@@ -166,6 +185,7 @@ function gameTurns(e) {
 			return;
 		} else {
 			if (count % 2 !== 0) {
+				$turn.textContent = "Good Luck!";
 				new Promise((resolve, reject) => {
 					resolve(player1.play(Game.board, e));
 				}).then(
